@@ -84,9 +84,11 @@ try {
     $stmt = $pdo->query("SELECT * FROM users");
     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // Start of table
     echo "<table id='usersTable'>";
     echo "<tr><th>ID</th><th>Name</th><th>Email</th></tr>";
 
+    // Display the 10 users in the table
     foreach ($users as $user) {
         echo "<tr><td>{$user['id']}</td><td>{$user['name']}</td><td>{$user['email']}</td></tr>";
     }
