@@ -62,7 +62,7 @@
 </head>
 <body>
 
-<h1>Users List</h1>
+<h1>Employees List</h1>
 
 <!-- Search Box -->
 <input type="text" id="searchInput" onkeyup="searchUsers()" placeholder="Search for names or emails..">
