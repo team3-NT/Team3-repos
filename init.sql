@@ -1,5 +1,5 @@
 -- Create the employees table
-CREATE TABLE users (
+CREATE TABLE employees (
   employee_id SERIAL PRIMARY KEY,  -- Unique ID for each employee
   first_name VARCHAR(100),          -- Employee's first name
   last_name VARCHAR(100),           -- Employee's last name
@@ -12,7 +12,7 @@ CREATE TABLE users (
 );
 
 -- Insert 10 sample employees
-INSERT INTO users (first_name, last_name, department, job_title, email, phone_number, hire_date, status) VALUES
+INSERT INTO employees (first_name, last_name, department, job_title, email, phone_number, hire_date, status) VALUES
 ('John', 'Doe', 'Sales', 'Sales Manager', 'john.doe@example.com', '(555) 123-4567', '2020-01-15', 'Active'),
 ('Jane', 'Smith', 'Marketing', 'Marketing Specialist', 'jane.smith@example.com', '(555) 234-5678', '2021-03-20', 'Active'),
 ('Alice', 'Johnson', 'IT', 'Software Engineer', 'alice.johnson@example.com', '(555) 345-6789', '2019-07-11', 'Inactive'),

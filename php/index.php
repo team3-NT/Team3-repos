@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Users List</title>
+    <title>Employees List</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -41,7 +41,7 @@
             var input, filter, table, tr, td, i, txtValue;
             input = document.getElementById("searchInput");
             filter = input.value.toUpperCase();
-            table = document.getElementById("usersTable");
+            table = document.getElementById("employeesTable");
             tr = table.getElementsByTagName("tr");
 
             for (i = 1; i < tr.length; i++) {
@@ -80,17 +80,27 @@ try {
     // Connect to PostgreSQL database
     $pdo = new PDO($dsn, $user, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 
-    // Fetch data from the users table
-    $stmt = $pdo->query("SELECT * FROM users");
-    $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // Fetch data from the employees table
+    $stmt = $pdo->query("SELECT * FROM employees");
+    $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Start of table
-    echo "<table id='usersTable'>";
-    echo "<tr><th>ID</th><th>Name</th><th>Email</th></tr>";
+    echo "<table id='employeesTable'>";
+    echo "<tr><th>ID</th><th>First Name</th><th>Last Name</th><th>Department</th><th>Job Title</th><th>Email</th><th>Phone</th><th>Hire Date</th><th>Status</th></tr>";
 
-    // Display the 10 users in the table
-    foreach ($users as $user) {
-        echo "<tr><td>{$user['id']}</td><td>{$user['name']}</td><td>{$user['email']}</td></tr>";
+    // Display the employees in the table
+    foreach ($employees as $employee) {
+        echo "<tr>
+                <td>{$employee['employee_id']}</td>
+                <td>{$employee['first_name']}</td>
+                <td>{$employee['last_name']}</td>
+                <td>{$employee['department']}</td>
+                <td>{$employee['job_title']}</td>
+                <td>{$employee['email']}</td>
+                <td>{$employee['phone_number']}</td>
+                <td>{$employee['hire_date']}</td>
+                <td>{$employee['status']}</td>
+              </tr>";
     }
 
     echo "</table>";
