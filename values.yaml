@@ -1,0 +1,29 @@
+# Default values for php-postgres.
+
+# PHP App Configuration
+php:
+  image: php:8.1-apache
+  replicaCount: 1
+  servicePort: 80
+  appPort: 8081
+  dbHost: "postgres-service"
+  dbUser: "myuser"
+  dbPassword: "mypassword"
+  dbName: "mydb"
+  pvc:
+    size: 1Gi
+
+# PostgreSQL Database Configuration
+postgres:
+  image: postgres:15
+  replicaCount: 1
+  dbName: "mydb"
+  dbUser: "myuser"
+  dbPassword: "mypassword"
+  pvc:
+    size: 1Gi
+
+# PersistentVolumeClaims for both PHP and PostgreSQL
+persistence:
+  enabled: true
+  storageClass: ""
