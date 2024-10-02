@@ -18,7 +18,7 @@ php:
 # PostgreSQL Database Configuration
 postgres:
   image: postgres:15
-  replicaCount: 2
+  replicaCount: 1
   dbName: "mydb"
   dbUser: "myuser"
   dbPassword: "mypassword"
