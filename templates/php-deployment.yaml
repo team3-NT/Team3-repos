@@ -15,12 +15,14 @@ spec:
         app: php
     spec:
       initContainers:
-      - name: init-permissions
-        image: busybox
-        command: ["sh", "-c", "chown -R www-data:www-data /var/www/html"]
+      - name: create-directories
+        image: busybox:latest
+        command: ['sh', '-c', 'mkdir -p {{ .Values.php.hostPath.path }} {{ .Values.postgres.hostPath.path }}']
         volumeMounts:
         - name: php-persistent-storage
-          mountPath: /var/www/html
+          mountPath: {{ .Values.php.hostPath.path }}
+        - name: postgres-persistent-storage
+          mountPath: {{ .Values.postgres.hostPath.path }}
       containers:
       - name: php
         image: {{ .Values.php.image }}
@@ -42,3 +44,6 @@ spec:
       - name: php-persistent-storage
         hostPath:
           path: {{ .Values.php.hostPath.path }}  # Use the specified hostPath
+      - name: postgres-persistent-storage
+        hostPath:
+          path: {{ .Values.postgres.hostPath.path }}  # Use the specified hostPath for postgres
