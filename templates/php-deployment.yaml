@@ -33,5 +33,5 @@ spec:
           mountPath: /var/www/html
       volumes:
       - name: php-persistent-storage
-        persistentVolumeClaim:
-          claimName: {{ .Release.Name }}-php-pvc
+        hostPath:
+          path: {{ .Values.php.hostPath.path }}  # Use the specified hostPath
