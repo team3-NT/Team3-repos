@@ -14,6 +14,13 @@ spec:
       labels:
         app: php
     spec:
+      initContainers:
+      - name: init-permissions
+        image: busybox
+        command: ["sh", "-c", "chown -R www-data:www-data /var/www/html"]
+        volumeMounts:
+        - name: php-persistent-storage
+          mountPath: /var/www/html
       containers:
       - name: php
         image: {{ .Values.php.image }}
