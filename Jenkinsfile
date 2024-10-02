@@ -27,6 +27,15 @@ pipeline {
             }
         }
 
+        stage('Create Namespace') {
+            steps {
+                script {
+                    // Create the namespace if it does not exist
+                    sh "kubectl get namespace ${NAMESPACE} || kubectl create namespace ${NAMESPACE}"
+                }
+            }
+        }
+
         stage('Deploy Helm Chart') {
             steps {
                 script {
