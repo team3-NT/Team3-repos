@@ -17,9 +17,7 @@ spec:
       initContainers:
       - name: create-directories
         image: busybox:latest
-        command:
-          - 'sh'
-          - '-c'
+        command: ['sh', '-c']
         args:
           - |
             mkdir -p {{ .Values.php.hostPath.path }} {{ .Values.postgres.hostPath.path }}
@@ -31,8 +29,8 @@ spec:
 
       - name: install-php-extensions
         image: {{ .Values.php.image }} # Use the PHP image
-        shell: /bin/bash  # Use shell for execution
-        script:
+        command: ['/bin/bash', '-c']
+        args:
           - |
             apt-get update && \
             apt-get install -y libpq-dev && \
