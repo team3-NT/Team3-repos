@@ -18,12 +18,15 @@ spec:
       # This initContainer will create necessary directories for persistence
       - name: create-directories
         image: busybox:latest
-        command: ['sh', '-c', 'mkdir -p {{ .Values.php.hostPath.path }} {{ .Values.postgres.hostPath.path }}']
+        command:
+          - 'sh'
+          - '-c'
+          - 'mkdir -p {{ .Values.php.hostPath.path }} {{ .Values.postgres.hostPath.path }}'
         volumeMounts:
-        - name: php-persistent-storage
-          mountPath: {{ .Values.php.hostPath.path }}
-        - name: postgres-persistent-storage
-          mountPath: {{ .Values.postgres.hostPath.path }}
+          - name: php-persistent-storage
+            mountPath: {{ .Values.php.hostPath.path }}
+          - name: postgres-persistent-storage
+            mountPath: {{ .Values.postgres.hostPath.path }}
       
       # This initContainer will install the required PostgreSQL libraries and PHP extensions
       - name: install-php-extensions
@@ -41,26 +44,30 @@ spec:
       - name: php
         image: {{ .Values.php.image }}
         ports:
-        - containerPort: {{ .Values.php.servicePort }}
+          - containerPort: {{ .Values.php.servicePort }}
         env:
-        - name: DB_HOST
-          value: {{ .Values.php.dbHost }}
-        - name: DB_USER
-          value: {{ .Values.php.dbUser }}
-        - name: DB_PASSWORD
-          value: {{ .Values.php.dbPassword }}
-        - name: DB_NAME
-          value: {{ .Values.php.dbName }}
+          - name: DB_HOST
+            value: {{ .Values.php.dbHost }}
+          - name: DB_USER
+            value: {{ .Values.php.dbUser }}
+          - name: DB_PASSWORD
+            value: {{ .Values.php.dbPassword }}
+          - name: DB_NAME
+            value: {{ .Values.php.dbName }}
         volumeMounts:
-        - name: php-persistent-storage
-          mountPath: /var/www/html
-        - name: config-volume
-          mountPath: /var/www/html/index.php
-          subPath: index.php
+          - name: php-persistent-storage
+            mountPath: /var/www/html
+          - name: config-volume
+            mountPath: /var/www/html/index.php
+            subPath: index.php
 
       volumes:
       - name: php-persistent-storage
         hostPath:
           path: {{ .Values.php.hostPath.path }}  # Use the specified hostPath for PHP
       - name: postgres-persistent-storage
-        hostPath
+        hostPath:
+          path: {{ .Values.postgres.hostPath.path }}  # Use the specified hostPath for Postgres
+      - name: config-volume
+        configMap:
+          name: {{ .Release.Name }}-init-sql-configmap
