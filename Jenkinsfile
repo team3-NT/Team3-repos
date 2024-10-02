@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         CHART_PATH = '.'                   // Path to Helm chart (root level)
-        NAMESPACE = 'group3Project'        // Kubernetes namespace
+        NAMESPACE = 'group3-project'        // Kubernetes namespace
     }
 
     stages {
