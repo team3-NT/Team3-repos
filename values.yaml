@@ -6,7 +6,7 @@ php:
   replicaCount: 1
   servicePort: 80
   appPort: 8081
-  dbHost: "php-postgres"
+  dbHost: "php-postgres-postgres"
   dbUser: "myuser"
   dbPassword: "mypassword"
   dbName: "mydb"
