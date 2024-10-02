@@ -15,18 +15,6 @@ spec:
         app: php
     spec:
       initContainers:
-      - name: create-directories
-        image: busybox:latest
-        command:
-          - 'sh'
-          - '-c'
-          - 'mkdir -p {{ .Values.php.hostPath.path }} {{ .Values.postgres.hostPath.path }}'
-        volumeMounts:
-          - name: php-persistent-storage
-            mountPath: {{ .Values.php.hostPath.path }}
-          - name: postgres-persistent-storage
-            mountPath: {{ .Values.postgres.hostPath.path }}
-
       - name: install-php-extensions
         image: {{ .Values.php.image }} # Use the PHP image
         command:
@@ -39,7 +27,7 @@ spec:
             apt-get clean && rm -rf /var/lib/apt/lists/* && \
             touch /var/www/html/install-done
         volumeMounts:
-          - name: php-persistent-storage # This must be defined in volumes
+          - name: config-volume
             mountPath: /var/www/html
 
       containers:
@@ -57,19 +45,11 @@ spec:
           - name: DB_NAME
             value: {{ .Values.php.dbName }}
         volumeMounts:
-          - name: php-persistent-storage
-            mountPath: /var/www/html
           - name: config-volume
             mountPath: /var/www/html/index.php
             subPath: index.php
 
       volumes:
-      - name: php-persistent-storage
-        hostPath:
-          path: {{ .Values.php.hostPath.path }}  # Use the specified hostPath for PHP
-      - name: postgres-persistent-storage
-        hostPath:
-          path: {{ .Values.postgres.hostPath.path }}  # Use the specified hostPath for Postgres
       - name: config-volume
         configMap:
           name: {{ .Release.Name }}-init-sql-configmap  # Reference your ConfigMap here
