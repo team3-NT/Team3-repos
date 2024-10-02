@@ -12,7 +12,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout the code from the Git repository
-                git 'https://gitlab.stackroute.in/Charles.prakash/Capstone-Project.git' // Update with your Git repository URL
+                git 'https://github.com/charlesprakash-git/Capstone-Project.git' // Update with your Git repository URL
             }
         }
 
