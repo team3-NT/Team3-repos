@@ -5,7 +5,7 @@ php:
   php:
   image: webdevops/php-nginx
   replicaCount: 1
-  servicePort: 80
+  servicePort: 8080
   #appPort: 8081
   dbHost: "php-postgres-postgres"
   dbUser: "myuser"
