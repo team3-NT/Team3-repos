@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ .Release.Name }}-create-directories
+  namespace: {{ .Values.namespace }}  # Ensure you specify the correct namespace
+spec:
+  selector:
+    matchLabels:
+      app: create-directories
+  template:
+    metadata:
+      labels:
+        app: create-directories
+    spec:
+      containers:
+      - name: create-directories
+        image: busybox:latest
+        command: ['sh', '-c', 'mkdir -p {{ .Values.php.hostPath.path }} {{ .Values.postgres.hostPath.path }}']
+        volumeMounts:
+        - name: php-persistent-storage
+          mountPath: {{ .Values.php.hostPath.path }}
+        - name: postgres-persistent-storage
+          mountPath: {{ .Values.postgres.hostPath.path }}
+      restartPolicy: Always
+      volumes:
+      - name: php-persistent-storage
+        hostPath:
+          path: {{ .Values.php.hostPath.path }}
+      - name: postgres-persistent-storage
+        hostPath:
+          path: {{ .Values.postgres.hostPath.path }}
