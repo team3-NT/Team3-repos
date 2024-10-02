@@ -36,10 +36,6 @@ spec:
             apt-get install -y libpq-dev && \
             docker-php-ext-install pdo pdo_pgsql pgsql && \
             apt-get clean && rm -rf /var/lib/apt/lists/* && \
-            touch /var/www/html/install-done
-        volumeMounts:
-          - name: php-persistent-storage # This must be defined in volumes
-            mountPath: /var/www/html
 
       containers:
       - name: php
@@ -59,7 +55,7 @@ spec:
           - name: php-persistent-storage
             mountPath: /usr/share/nginx/html
           - name: config-volume
-            mountPath: /var/www/html/index.php
+            mountPath: /usr/share/nginx/index.php
             subPath: index.php
 
       volumes:
