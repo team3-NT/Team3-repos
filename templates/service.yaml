@@ -16,7 +16,7 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-postgres
 spec:
-  type: LoadBalancer  # Keeping as LoadBalancer
+#  type: LoadBalancer  # Keeping as LoadBalancer
   ports:
     - port: 5432
       targetPort: 5432
