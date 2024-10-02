@@ -10,9 +10,6 @@ php:
   dbUser: "myuser"
   dbPassword: "mypassword"
   dbName: "mydb"
-  hostPath:
-    enabled: true                # Set this to true if using hostPath
-    path: /mnt/data/php          # Path on the host where data will be stored
 
 # PostgreSQL Database Configuration
 postgres:
@@ -21,6 +18,9 @@ postgres:
   dbName: "mydb"
   dbUser: "myuser"
   dbPassword: "mypassword"
-  hostPath:
-    enabled: true                # Set this to true if using hostPath
-    path: /mnt/data/postgres     # Path on the host where data will be stored
+  persistence:
+    enabled: true
+    storageClass: ""  # Optional: Set storage class or leave empty to use default
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi  # Set the size of the persistent volume claim
