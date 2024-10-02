@@ -50,7 +50,7 @@ spec:
         env:
           - name: DB_HOST
            # value: {{ .Values.php.dbHost }}
-            value: php-postgres-postgres.group3-project.svc.cluster.local
+            value: "php-postgres-postgres.group3-project.svc.cluster.local"
           - name: DB_USER
             value: {{ .Values.php.dbUser }}
           - name: DB_PASSWORD
