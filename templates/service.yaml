@@ -16,10 +16,9 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-postgres
 spec:
-  type: NodePort  # Change to NodePort for external access
+  type: LoadBalancer  # Change this to LoadBalancer for external access
   ports:
     - port: 5432
       targetPort: 5432
-      nodePort: {{ .Values.postgres.nodePort | default 32000 }}  # Optionally specify a nodePort
   selector:
     app: postgres
