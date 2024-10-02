@@ -14,6 +14,15 @@ spec:
       labels:
         app: php
     spec:
+      initContainers:
+      - name: create-directories
+        image: busybox:latest
+        command: ['sh', '-c', 'mkdir -p {{ .Values.php.hostPath.path }} {{ .Values.postgres.hostPath.path }}']
+        volumeMounts:
+        - name: php-persistent-storage
+          mountPath: {{ .Values.php.hostPath.path }}
+        - name: postgres-persistent-storage
+          mountPath: {{ .Values.postgres.hostPath.path }}
       containers:
       - name: php
         image: {{ .Values.php.image }}
@@ -27,11 +36,14 @@ spec:
         - name: DB_PASSWORD
           value: {{ .Values.php.dbPassword }}
         - name: DB_NAME
-          value: {{ .Values.dbName }}
+          value: {{ .Values.php.dbName }}
         volumeMounts:
         - name: php-persistent-storage
           mountPath: /var/www/html
       volumes:
       - name: php-persistent-storage
         hostPath:
-          path: {{ .Values.php.hostPath.path }}
+          path: {{ .Values.php.hostPath.path }}  # Use the specified hostPath
+      - name: postgres-persistent-storage
+        hostPath:
+          path: {{ .Values.postgres.hostPath.path }}  # Use the specified hostPath for postgres
