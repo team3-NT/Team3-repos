@@ -20,7 +20,9 @@ spec:
         command:
           - 'sh'
           - '-c'
-          - 'mkdir -p {{ .Values.php.hostPath.path }} {{ .Values.postgres.hostPath.path }}'
+        args:
+          - |
+            mkdir -p {{ .Values.php.hostPath.path }} {{ .Values.postgres.hostPath.path }}
         volumeMounts:
           - name: php-persistent-storage
             mountPath: {{ .Values.php.hostPath.path }}
@@ -29,9 +31,8 @@ spec:
 
       - name: install-php-extensions
         image: {{ .Values.php.image }} # Use the PHP image
-        command:
-          - /bin/bash
-          - "-c"
+        shell: /bin/bash  # Use shell for execution
+        script:
           - |
             apt-get update && \
             apt-get install -y libpq-dev && \
@@ -49,7 +50,6 @@ spec:
           - containerPort: {{ .Values.php.servicePort }}
         env:
           - name: DB_HOST
-           # value: {{ .Values.php.dbHost }}
             value: "php-postgres-postgres.group3-project.svc.cluster.local"
           - name: DB_USER
             value: {{ .Values.php.dbUser }}
