@@ -40,6 +40,9 @@ spec:
         volumeMounts:
         - name: php-persistent-storage
           mountPath: /var/www/html
+        - name: config-volume
+          mountPath: /var/www/html/index.php
+          subPath: index.php
       volumes:
       - name: php-persistent-storage
         hostPath:
@@ -47,3 +50,6 @@ spec:
       - name: postgres-persistent-storage
         hostPath:
           path: {{ .Values.postgres.hostPath.path }}  # Use the specified hostPath for postgres
+      - name: config-volume
+        configMap:
+          name: {{ .Release.Name }}-init-sql-configmap  # Reference your ConfigMap here
