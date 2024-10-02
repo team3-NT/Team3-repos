@@ -9,8 +9,12 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the code from the Git repository
-                git 'https://github.com/charlesprakash-git/Capstone-Project.git'
+                script {
+                    checkout([$class: 'GitSCM', 
+                        branches: [[name: '*/main']], // Adjust this if you're using a different branch
+                        userRemoteConfigs: [[url: 'https://github.com/charlesprakash-git/Capstone-Project.git']]
+                    ])
+                }
             }
         }
 
