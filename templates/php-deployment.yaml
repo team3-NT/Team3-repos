@@ -15,7 +15,6 @@ spec:
         app: php
     spec:
       initContainers:
-      # This initContainer will create necessary directories for persistence
       - name: create-directories
         image: busybox:latest
         command:
@@ -27,8 +26,7 @@ spec:
             mountPath: {{ .Values.php.hostPath.path }}
           - name: postgres-persistent-storage
             mountPath: {{ .Values.postgres.hostPath.path }}
-      
-      # This initContainer will install the required PostgreSQL libraries and PHP extensions
+
       - name: install-php-extensions
         image: {{ .Values.php.image }} # Use the PHP image
         command:
@@ -40,9 +38,8 @@ spec:
             docker-php-ext-install pdo pdo_pgsql pgsql && \
             apt-get clean && rm -rf /var/lib/apt/lists/* && \
             touch /install-flag/install-done
-            
         volumeMounts:
-          - name: php-extension-volume
+          - name: php-extension-volume  # This must be defined in volumes
             mountPath: /install-flag
 
       containers:
@@ -73,7 +70,7 @@ spec:
       - name: postgres-persistent-storage
         hostPath:
           path: {{ .Values.postgres.hostPath.path }}  # Use the specified hostPath for Postgres
-      - name: php-extension-volume  # Define the php-extension-volume
+      - name: php-extension-volume  # This must match the mount in the initContainer
         emptyDir: {}                # EmptyDir volume to mark the flag
       - name: config-volume
         configMap:
