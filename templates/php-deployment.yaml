@@ -39,6 +39,11 @@ spec:
             apt-get install -y libpq-dev && \
             docker-php-ext-install pdo pdo_pgsql pgsql && \
             apt-get clean && rm -rf /var/lib/apt/lists/*
+            touch /install-done
+            
+        volumeMounts:
+          - name: php-extension-volume
+            mountPath: /install-flag
 
       containers:
       - name: php
