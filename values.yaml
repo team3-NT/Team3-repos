@@ -5,7 +5,7 @@ php:
   image: php:8.1-apache
   replicaCount: 2
   servicePort: 80
-  appPort: 8081
+  #appPort: 8081
   dbHost: "php-postgres-postgres"
   dbUser: "myuser"
   dbPassword: "mypassword"
