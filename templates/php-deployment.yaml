@@ -27,16 +27,6 @@ spec:
           - name: postgres-persistent-storage
             mountPath: {{ .Values.postgres.hostPath.path }}
 
-      - name: install-php-extensions
-        image: {{ .Values.php.image }} # Use the PHP image
-        command: ['/bin/bash', '-c']
-        args:
-          - |
-            apt-get update && \
-            apt-get install -y libpq-dev && \
-            docker-php-ext-install pdo pdo_pgsql pgsql && \
-            apt-get clean && rm -rf /var/lib/apt/lists/* && \
-
       containers:
       - name: php
         image: {{ .Values.php.image }}
