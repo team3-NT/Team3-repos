@@ -3,7 +3,6 @@ pipeline {
 
     environment {
         DOCKER_CREDENTIALS_ID = 'dockerlogin' // Update with your Docker credentials ID in Jenkins
-        GITLAB_CREDENTIALS_ID = 'gitlab' // Update with your GitLab credentials ID in Jenkins
         REGISTRY = 'charlesprakash/prod' // Update with your Docker registry (e.g., docker.io/your-username)
         IMAGE_NAME = 'php-postgres'
         CHART_PATH = './php-postgres' // Path to your Helm chart
