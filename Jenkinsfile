@@ -2,47 +2,23 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_CREDENTIALS_ID = 'dockerlogin' // Update with your Docker credentials ID in Jenkins
-        REGISTRY = 'charlesprakash/prod' // Update with your Docker registry (e.g., docker.io/your-username)
-        IMAGE_NAME = 'php-postgres'
-        CHART_PATH = './php-postgres' // Path to your Helm chart
+        CHART_PATH = '.'                   // Path to Helm chart (root level)
+        NAMESPACE = 'group3Project'        // Kubernetes namespace
     }
 
     stages {
         stage('Checkout') {
             steps {
                 // Checkout the code from the Git repository
-                git 'https://github.com/charlesprakash-git/Capstone-Project.git' // Update with your Git repository URL
+                git 'https://github.com/charlesprakash-git/Capstone-Project.git'
             }
         }
 
-        stage('Build PHP Image') {
+        stage('Lint Helm Chart') {
             steps {
                 script {
-                    // Build the Docker image for PHP
-                    docker.build("${REGISTRY}/${IMAGE_NAME}-php:latest", "-f Dockerfile.php .")
-                }
-            }
-        }
-
-        stage('Build Postgres Image') {
-            steps {
-                script {
-                    // Build the Docker image for PostgreSQL
-                    docker.build("${REGISTRY}/${IMAGE_NAME}-postgres:latest", "-f Dockerfile.postgres .")
-                }
-            }
-        }
-
-        stage('Push Images') {
-            steps {
-                script {
-                    // Push the Docker images to the registry
-                    withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                        sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin ${REGISTRY}"
-                        sh "docker push ${REGISTRY}/${IMAGE_NAME}-php:latest"
-                        sh "docker push ${REGISTRY}/${IMAGE_NAME}-postgres:latest"
-                    }
+                    // Lint the Helm chart to catch any issues
+                    sh "helm lint ${CHART_PATH}"
                 }
             }
         }
@@ -50,8 +26,17 @@ pipeline {
         stage('Deploy Helm Chart') {
             steps {
                 script {
-                    // Deploy the Helm chart using the updated images
-                    sh "helm upgrade --install ${IMAGE_NAME} ${CHART_PATH} --namespace my-namespace --values ${CHART_PATH}/values.yaml"
+                    // Deploy the Helm chart using the dependencies from the templates folder
+                    sh "helm upgrade --install php-postgres ${CHART_PATH} --namespace ${NAMESPACE} --values ${CHART_PATH}/values.yaml --wait --timeout 300s"
+                }
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                script {
+                    // Verify that the deployment is successful by checking the pod status
+                    sh "kubectl get pods --namespace ${NAMESPACE} -l app=php-postgres"
                 }
             }
         }
