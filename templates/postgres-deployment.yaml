@@ -12,7 +12,6 @@ spec:
   storageClassName: {{ .Values.postgres.persistence.storageClass | default "" }}
 
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -48,8 +47,8 @@ spec:
           mountPath: /docker-entrypoint-initdb.d
       volumes:
       - name: postgres-data
-        hostPath:
-          path: {{ .Values.postgres.hostPath.path }}  # Use the specified hostPath
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-postgres-pvc  # Use PVC instead of hostPath
       - name: init-sql
         configMap:
           name: {{ .Release.Name }}-init-sql-configmap
