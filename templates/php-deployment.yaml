@@ -38,8 +38,8 @@ spec:
             apt-get update && \
             apt-get install -y libpq-dev && \
             docker-php-ext-install pdo pdo_pgsql pgsql && \
-            apt-get clean && rm -rf /var/lib/apt/lists/*
-            touch /install-done
+            apt-get clean && rm -rf /var/lib/apt/lists/* && \
+            touch /install-flag/install-done
             
         volumeMounts:
           - name: php-extension-volume
@@ -73,6 +73,8 @@ spec:
       - name: postgres-persistent-storage
         hostPath:
           path: {{ .Values.postgres.hostPath.path }}  # Use the specified hostPath for Postgres
+      - name: php-extension-volume  # Define the php-extension-volume
+        emptyDir: {}                # EmptyDir volume to mark the flag
       - name: config-volume
         configMap:
-          name: {{ .Release.Name }}-init-sql-configmap
+          name: {{ .Release.Name }}-init-sql-configmap  # Reference your ConfigMap here
