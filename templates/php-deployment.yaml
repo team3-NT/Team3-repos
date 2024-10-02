@@ -57,7 +57,7 @@ spec:
             value: {{ .Values.php.dbName }}
         volumeMounts:
           - name: php-persistent-storage
-            mountPath: /var/www/html
+            mountPath: /usr/share/nginx/html
           - name: config-volume
             mountPath: /var/www/html/index.php
             subPath: index.php
