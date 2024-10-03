@@ -35,9 +35,12 @@ spec:
             - |
               set -e  # Exit immediately if a command exits with a non-zero status
               apt-get update
-              sleep 10
               apt-get install -y libpq-dev  # Install dependencies
-              sleep 10  # Wait for 10 seconds to ensure installation is complete
+              docker-php-ext-install pdo  # Install pdo first
+              docker-php-ext-install pdo_pgsql  # Install pdo_pgsql next
+              sleep 10
+              apt-get update
+              apt-get install -y libpq-dev  # Install dependencies
               docker-php-ext-install pdo  # Install pdo first
               docker-php-ext-install pdo_pgsql  # Install pdo_pgsql next
               apt-get clean
