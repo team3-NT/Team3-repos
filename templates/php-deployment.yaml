@@ -17,15 +17,30 @@ spec:
       initContainers:
       - name: create-directories
         image: busybox:latest
-        command: ['sh', '-c']
-        args:
-          - |
-            mkdir -p {{ .Values.php.hostPath.path }} {{ .Values.postgres.hostPath.path }}
+        command:
+          - 'sh'
+          - '-c'
+          - 'mkdir -p {{ .Values.php.hostPath.path }} {{ .Values.postgres.hostPath.path }}'
         volumeMounts:
           - name: php-persistent-storage
             mountPath: {{ .Values.php.hostPath.path }}
           - name: postgres-persistent-storage
             mountPath: {{ .Values.postgres.hostPath.path }}
+
+      - name: install-php-extensions
+        image: {{ .Values.php.image }} # Use the PHP image
+        command:
+          - /bin/bash
+          - "-c"
+          - |
+            apt-get update && \
+            apt-get install -y libpq-dev && \
+            docker-php-ext-install pdo pdo_pgsql pgsql && \
+            apt-get clean && rm -rf /var/lib/apt/lists/* && \
+            touch /var/www/html/install-done
+        volumeMounts:
+          - name: php-persistent-storage # This must be defined in volumes
+            mountPath: /var/www/html
 
       containers:
       - name: php
@@ -34,7 +49,7 @@ spec:
           - containerPort: {{ .Values.php.servicePort }}
         env:
           - name: DB_HOST
-            value: "php-postgres-postgres.group3-project.svc.cluster.local"
+            value: {{ .Values.php.dbHost }}
           - name: DB_USER
             value: {{ .Values.php.dbUser }}
           - name: DB_PASSWORD
@@ -43,9 +58,9 @@ spec:
             value: {{ .Values.php.dbName }}
         volumeMounts:
           - name: php-persistent-storage
-            mountPath: /usr/share/nginx/html
+            mountPath: /var/www/html
           - name: config-volume
-            mountPath: /usr/share/nginx/index.php
+            mountPath: /var/www/html/index.php
             subPath: index.php
 
       volumes:
