@@ -48,42 +48,6 @@ spec:
             - name: php-persistent-storage  # This must be defined in volumes
               mountPath: /var/www/html
 
-        - name: create-database
-          image: {{ .Values.php.image }}  # Use the PHP image to create the database
-          command:
-            - /bin/bash
-            - "-c"
-            - |
-              # Create SQLite database if it does not exist
-              dbname="/var/www/html/employees.db"
-              if [ ! -f "$dbname" ]; then
-                echo "Creating SQLite database..."
-                touch "$dbname"
-                # Create employees table
-                php -r "
-                  \$pdo = new PDO('sqlite:$dbname');
-                  \$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                  \$sql = 'CREATE TABLE employees (
-                    employee_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    first_name TEXT,
-                    last_name TEXT,
-                    department TEXT,
-                    job_title TEXT,
-                    email TEXT,
-                    phone_number TEXT,
-                    hire_date DATE,
-                    status TEXT
-                  )';
-                  \$pdo->exec(\$sql);
-                "
-                echo "SQLite database created with table 'employees'."
-              else
-                echo "SQLite database already exists."
-              fi
-          volumeMounts:
-            - name: php-persistent-storage
-              mountPath: /var/www/html
-
       containers:
         - name: php
           image: {{ .Values.php.image }}
