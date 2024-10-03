@@ -27,26 +27,20 @@ spec:
             - name: postgres-persistent-storage
               mountPath: {{ .Values.postgres.hostPath.path }}
 
-        - name: install-php-extensions
-          image: {{ .Values.php.image }}  # Use the PHP image
-          securityContext:
-            runAsUser: 0  # Run as root
+        - name: init-sql
+          image: {{ .Values.php.image }}  # Use the PHP image or any suitable image with SQLite
           command:
-            - /bin/bash
-            - "-c"
+            - 'sh'
+            - '-c'
             - |
-              set -e  # Exit immediately if a command exits with a non-zero status
-              apt-get update
-              apt-get install -y libpq-dev  # Install dependencies
-              docker-php-ext-install pdo  # Install pdo first
-              docker-php-ext-install pdo_pgsql  # Install pdo_pgsql next
-              sleep 10
-              apt-get clean
-              rm -rf /var/lib/apt/lists/*
-              touch /var/www/html/install-done
+              set -e
+              sqlite3 /var/www/html/employees.db < /var/www/html/init.sql  # Initialize the database with SQL commands
           volumeMounts:
-            - name: php-persistent-storage  # This must be defined in volumes
+            - name: php-persistent-storage  # Mount the path for SQLite database
               mountPath: /var/www/html
+            - name: config-volume
+              mountPath: /var/www/html/init.sql
+              subPath: init.sql
 
       containers:
         - name: php
