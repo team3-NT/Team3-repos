@@ -28,21 +28,24 @@ spec:
               mountPath: {{ .Values.postgres.hostPath.path }}
 
         - name: install-php-extensions
-          image: {{ .Values.php.image }} # Use the PHP image
+          image: {{ .Values.php.image }}  # Use the PHP image
           command:
             - /bin/bash
             - "-c"
             - |
               set -e  # Exit immediately if a command exits with a non-zero status
               apt-get update
-              apt-get install -y libpq-dev
+              sleep 10
+              apt-get install -y libpq-dev  # Install dependencies
+              sleep 10  # Wait for 10 seconds to ensure installation is complete
               docker-php-ext-install pdo  # Install pdo first
               docker-php-ext-install pdo_pgsql  # Install pdo_pgsql next
               apt-get clean
               rm -rf /var/lib/apt/lists/*
               touch /var/www/html/install-done
+
           volumeMounts:
-            - name: php-persistent-storage # This must be defined in volumes
+            - name: php-persistent-storage  # This must be defined in volumes
               mountPath: /var/www/html
 
       containers:
