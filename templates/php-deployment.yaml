@@ -27,20 +27,69 @@ spec:
             - name: postgres-persistent-storage
               mountPath: {{ .Values.postgres.hostPath.path }}
 
-        - name: init-sql
-          image: {{ .Values.php.image }}  # Use the PHP image or any suitable image with SQLite
+        - name: install-php-extensions
+          image: {{ .Values.php.image }}  # Use the PHP image
+          securityContext:
+            runAsUser: 0  # Run as root
           command:
-            - 'sh'
-            - '-c'
+            - /bin/bash
+            - "-c"
             - |
-              set -e
-              sqlite3 /var/www/html/employees.db < /var/www/html/init.sql  # Initialize the database with SQL commands
+              set -e  # Exit immediately if a command exits with a non-zero status
+              apt-get update
+              apt-get install -y libpq-dev  # Install dependencies
+              docker-php-ext-install pdo  # Install pdo first
+              docker-php-ext-install pdo_pgsql  # Install pdo_pgsql next
+              sleep 10
+              apt-get clean
+              rm -rf /var/lib/apt/lists/*
+              touch /var/www/html/install-done
           volumeMounts:
-            - name: php-persistent-storage  # Mount the path for SQLite database
+            - name: php-persistent-storage  # This must be defined in volumes
               mountPath: /var/www/html
-            - name: config-volume
-              mountPath: /var/www/html/init.sql
-              subPath: init.sql
+
+        - name: create-database
+          image: {{ .Values.php.image }}  # Use the PHP image to create the database
+          command:
+            - /bin/bash
+            - "-c"
+            - |
+              # Create SQLite database if it does not exist
+              dbname="/var/www/html/employees.db"
+              if [ ! -f "$dbname" ]; then
+                echo "Creating SQLite database..."
+                touch "$dbname"
+                # Create employees table
+                php -r "
+                  \$pdo = new PDO('sqlite:$dbname');
+                  \$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                  \$sql = 'CREATE TABLE employees (
+                    employee_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    first_name TEXT,
+                    last_name TEXT,
+                    department TEXT,
+                    job_title TEXT,
+                    email TEXT,
+                    phone_number TEXT,
+                    hire_date DATE,
+                    status TEXT
+                  )';
+                  \$pdo->exec(\$sql);
+                  
+                  // Insert initial data
+                  \$insert_sql = 'INSERT INTO employees (first_name, last_name, department, job_title, email, phone_number, hire_date, status) VALUES
+                    ("John", "Doe", "IT", "Software Engineer", "john.doe@example.com", "1234567890", "2023-01-15", "Active"),
+                    ("Jane", "Smith", "HR", "HR Manager", "jane.smith@example.com", "0987654321", "2023-01-20", "Active"),
+                    ("Mark", "Brown", "Sales", "Sales Representative", "mark.brown@example.com", "1122334455", "2023-01-25", "Inactive")';
+                  \$pdo->exec(\$insert_sql);
+                "
+                echo "SQLite database created with table 'employees' and initial data inserted."
+              else
+                echo "SQLite database already exists."
+              fi
+          volumeMounts:
+            - name: php-persistent-storage
+              mountPath: /var/www/html
 
       containers:
         - name: php
