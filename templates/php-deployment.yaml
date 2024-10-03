@@ -36,7 +36,8 @@ spec:
               set -e  # Exit immediately if a command exits with a non-zero status
               apt-get update
               apt-get install -y libpq-dev
-              docker-php-ext-install pdo pdo_pgsql
+              docker-php-ext-install pdo  # Install pdo first
+              docker-php-ext-install pdo_pgsql  # Install pdo_pgsql next
               apt-get clean
               rm -rf /var/lib/apt/lists/*
               touch /var/www/html/install-done
